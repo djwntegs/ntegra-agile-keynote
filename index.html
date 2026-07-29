@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>A Day in the Life — Senior Agile Consultant · ntegra</title>
+<style>
+/* ─── Reset ────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; overflow-x: hidden; background: #0B0B0B; font-family: Inter, Aptos, 'Segoe UI', Arial, sans-serif; }
+
+/* ─── Slide wrapper — scales slide to viewport width ─── */
+.slide-wrapper { width: 100%; overflow: hidden; }
+
+/* ─── Each slide: always 1920×1080, scaled via JS ─────── */
+.slide {
+  width: 1920px; height: 1080px;
+  overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+  transform-origin: top left;
+}
+
+/* ─── Print layout ─────────────────────────────────────── */
+@media print {
+  @page { size: 13.333in 7.5in; margin: 0; }
+  html, body { width: 1920px; overflow-x: visible; }
+  .slide-wrapper { width: 1920px; height: 1080px; }
+  .slide {
+    transform: none !important;
+    page-break-after: always;
+    break-after: page;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ─── Backgrounds ──────────────────────────────────────── */
+.bg-main  { background: #0B0B0B; }
+.bg-dark  { background: #111111; }
+.bg-light { background: #F0FDF8; color: #0B0B0B; }
+
+/* ─── Grid overlay ─────────────────────────────────────── */
+.grid-bg::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    repeating-linear-gradient(0deg,   transparent, transparent 134px, rgba(110,219,180,0.06) 134px, rgba(110,219,180,0.06) 135px),
+    repeating-linear-gradient(90deg,  transparent, transparent 192px, rgba(110,219,180,0.06) 192px, rgba(110,219,180,0.06) 193px);
+}
+.slide > * { position: relative; z-index: 1; }
+
+/* ─── Glow blobs ───────────────────────────────────────── */
+.glow {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); pointer-events: none; z-index: 0;
+}
+
+/* ─── Standard padding ─────────────────────────────────── */
+.pad { padding: 72px 96px; }
+
+/* ─── Flex helpers ─────────────────────────────────────── */
+.col  { display: flex; flex-direction: column; }
+.row  { display: flex; flex-direction: row; }
+.grow { flex: 1; }
+.gap24  { gap: 24px; }
+.gap32  { gap: 32px; }
+.gap40  { gap: 40px; }
+.gap48  { gap: 48px; }
+
+/* ─── Cards ────────────────────────────────────────────── */
+.card {
+  border-radius: 20px;
+  padding: 52px 48px;
+  flex: 1; position: relative; overflow: hidden;
+}
+.card-mint   { background: #0A1A14; border: 2px solid #6EDBB4; }
+.card-blue   { background: #0D1B2E; border: 2px solid #3B82F6; }
+.card-amber  { background: #1A140A; border: 2px solid #F59E0B; }
+.card-violet { background: #130D1A; border: 2px solid #8B5CF6; }
+.card-slate  { background: #161616; border: 2px solid #2A2A2A; }
+
+.card-top-mint   { border-top: 10px solid #6EDBB4; }
+.card-top-blue   { border-top: 10px solid #3B82F6; }
+.card-top-amber  { border-top: 10px solid #F59E0B; }
+.card-top-violet { border-top: 10px solid #8B5CF6; }
+.card-top-slate  { border-top: 10px solid #2A2A2A; }
+
+/* ─── Typography ───────────────────────────────────────── */
+.label  { font-size: 24px; font-weight: 700; color: #6EDBB4; letter-spacing: 2px; text-transform: uppercase; }
+.hero   { font-size: 90px; font-weight: 800; color: #FFFFFF; line-height: 1.05; }
+.t64    { font-size: 64px; font-weight: 700; color: #FFFFFF; line-height: 1.1; }
+.t52    { font-size: 52px; font-weight: 700; color: #FFFFFF; line-height: 1.15; }
+.t44    { font-size: 44px; font-weight: 700; color: #FFFFFF; line-height: 1.15; }
+.t36    { font-size: 36px; font-weight: 700; color: #FFFFFF; line-height: 1.2; }
+.t28    { font-size: 28px; font-weight: 700; color: #FFFFFF; line-height: 1.3; }
+.t24    { font-size: 24px; color: #6B7280; line-height: 1.55; }
+.t20    { font-size: 20px; color: #6B7280; line-height: 1.55; }
+
+.white  { color: #FFFFFF !important; }
+.mint   { color: #6EDBB4; }
+.blue   { color: #3B82F6; }
+.amber  { color: #F59E0B; }
+.violet { color: #8B5CF6; }
+.muted  { color: #6B7280; }
+.muted2 { color: #94A3B8; }
+
+/* ─── Progress bars ────────────────────────────────────── */
+.bar-track { background: #1F1F1F; border-radius: 8px; height: 22px; width: 100%; }
+.bar-fill  { height: 22px; border-radius: 8px; }
+
+/* ─── Inline logo ──────────────────────────────────────── */
+.logo { display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ SLIDE 1 — Cover ══════════════════════ -->
+<div class="slide bg-main grid-bg" id="s1">
+  <div class="glow" style="width:900px;height:900px;top:-300px;right:-150px;background:rgba(110,219,180,0.15)"></div>
+  <div class="glow" style="width:500px;height:500px;bottom:-100px;left:-100px;background:rgba(110,219,180,0.07)"></div>
+
+  <div style="display:flex;align-items:center;flex:1;padding:0 96px">
+    <div style="width:10px;height:360px;background:#6EDBB4;border-radius:5px;margin-right:64px;flex-shrink:0"></div>
+    <div>
+      <div class="label" style="margin-bottom:32px">ntegra · Senior Agile Practice</div>
+      <div class="hero">A Day in the Life of a<br>Senior Agile Consultant</div>
+      <div style="font-size:38px;color:#3A3A3A;margin-top:28px">No two days are ever the same</div>
+    </div>
+  </div>
+
+  <div style="padding:32px 96px;display:flex;justify-content:space-between;align-items:center">
+    <svg width="200" height="52" viewBox="0 0 200 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="4" width="8" height="40" rx="3" fill="#6EDBB4"/>
+      <polygon points="0,4 8,4 22,44 14,44" fill="#6EDBB4"/>
+      <rect x="14" y="4" width="8" height="40" rx="3" fill="#6EDBB4"/>
+      <text x="34" y="38" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="300" fill="#FFFFFF" letter-spacing="-0.5">ntegra</text>
+    </svg>
+    <div style="background:#6EDBB4;color:#0B0B0B;font-size:22px;font-weight:700;padding:14px 40px;border-radius:10px">2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 2 — No Two Days Are the Same ══════════════════════ -->
+<div class="slide bg-main col" style="justify-content:center;padding:0 140px" id="s2">
+  <div style="font-size:54px;color:#2A2A2A;margin-bottom:40px;font-weight:400">Every day I could be doing any of these.</div>
+  <div style="font-size:82px;font-weight:800;color:#FFFFFF;line-height:1.1">Adapt.<br>Switch.<br>Lead.<br>Deliver.</div>
+  <div style="display:flex;gap:24px;margin-top:80px">
+    <div style="background:#0A1A14;border:2px solid #6EDBB4;border-radius:50px;padding:18px 48px;font-size:28px;font-weight:700;color:#6EDBB4">Client Engagements</div>
+    <div style="background:#161616;border:2px solid #2A2A2A;border-radius:50px;padding:18px 48px;font-size:28px;font-weight:700;color:#6B7280">Business Development</div>
+    <div style="background:#161616;border:2px solid #2A2A2A;border-radius:50px;padding:18px 48px;font-size:28px;font-weight:700;color:#6B7280">Internal Initiatives</div>
+  </div>
+  <div style="width:32px;height:32px;background:#6EDBB4;border-radius:50%;margin-top:80px"></div>
+</div>
+
+<!-- ══════════════════════ SLIDE 3 — The Three Domains ══════════════════════ -->
+<div class="slide bg-main col pad" id="s3">
+  <div class="label" style="margin-bottom:16px">What fills my day</div>
+  <div class="t52" style="margin-bottom:40px">Three domains, constant context switching</div>
+
+  <div class="row grow gap32">
+
+    <div class="card card-slate card-top-mint" style="display:flex;flex-direction:column">
+      <div style="font-size:80px;font-weight:800;color:#6EDBB4;line-height:1;margin-bottom:28px">01</div>
+      <div style="font-size:34px;font-weight:700;color:#FFFFFF;margin-bottom:24px;line-height:1.25">Client Engagements</div>
+      <div style="font-size:24px;color:#6B7280;line-height:1.55;flex:1">Supporting organisations like Dstl and Dentsu across delivery, strategy and coaching — each with their own culture, maturity and challenges.</div>
+    </div>
+
+    <div class="card card-slate card-top-amber" style="display:flex;flex-direction:column">
+      <div style="font-size:80px;font-weight:800;color:#F59E0B;line-height:1;margin-bottom:28px">02</div>
+      <div style="font-size:34px;font-weight:700;color:#FFFFFF;margin-bottom:24px;line-height:1.25">Business Development</div>
+      <div style="font-size:24px;color:#6B7280;line-height:1.55;flex:1">Contributing to the Innovation Festival, shaping follow-on opportunities with NWG, and developing propositions that show what agile and AI can do.</div>
+    </div>
+
+    <div class="card card-slate card-top-violet" style="display:flex;flex-direction:column">
+      <div style="font-size:80px;font-weight:800;color:#8B5CF6;line-height:1;margin-bottom:28px">03</div>
+      <div style="font-size:34px;font-weight:700;color:#FFFFFF;margin-bottom:24px;line-height:1.25">Internal Initiatives</div>
+      <div style="font-size:24px;color:#6B7280;line-height:1.55;flex:1">Driving Team 30 and the Product Engineering Working Group — longer-term strategic programmes that shape how ntegra works and grows.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 4 — Four Agile Hats ══════════════════════ -->
+<div class="slide bg-main col pad" id="s4">
+  <div class="glow" style="width:700px;height:700px;top:50px;left:50%;transform:translateX(-50%);background:rgba(110,219,180,0.08)"></div>
+  <div class="label" style="margin-bottom:16px">Wearing different hats</div>
+  <div class="t44" style="margin-bottom:40px">One role. Four leadership modes.</div>
+
+  <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px">
+
+    <div class="card card-mint card-top-mint" style="display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#6EDBB4;letter-spacing:1px;margin-bottom:10px">PRODUCT MANAGER</div>
+      <div style="width:100%;height:1px;background:#0D2218;margin-bottom:24px"></div>
+      <div style="font-size:30px;font-weight:700;color:#FFFFFF;margin-bottom:16px;line-height:1.3">Strategic Leadership</div>
+      <div style="font-size:22px;color:#6B7280;line-height:1.55;flex:1">Operating at the strategic level — product vision, stakeholder alignment, investment decisions, and connecting work to organisational objectives.</div>
+    </div>
+
+    <div class="card card-blue card-top-blue" style="display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#3B82F6;letter-spacing:1px;margin-bottom:10px">PRODUCT OWNER</div>
+      <div style="width:100%;height:1px;background:#0D1B2E;margin-bottom:24px"></div>
+      <div style="font-size:30px;font-weight:700;color:#FFFFFF;margin-bottom:16px;line-height:1.3">Turning Strategy into Delivery</div>
+      <div style="font-size:22px;color:#6B7280;line-height:1.55;flex:1">Managing and refining the backlog, writing user stories, prioritising value, clarifying requirements and accepting completed work each sprint.</div>
+    </div>
+
+    <div class="card card-amber card-top-amber" style="display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#F59E0B;letter-spacing:1px;margin-bottom:10px">SCRUM MASTER</div>
+      <div style="width:100%;height:1px;background:#1A140A;margin-bottom:24px"></div>
+      <div style="font-size:30px;font-weight:700;color:#FFFFFF;margin-bottom:16px;line-height:1.3">Enabling High Performing Teams</div>
+      <div style="font-size:22px;color:#6B7280;line-height:1.55;flex:1">Facilitating all Scrum ceremonies, coaching on agile principles, removing impediments, and creating conditions for teams to become self-organising.</div>
+    </div>
+
+    <div class="card card-violet card-top-violet" style="display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#8B5CF6;letter-spacing:1px;margin-bottom:10px">DELIVERY LEAD</div>
+      <div style="width:100%;height:1px;background:#130D1A;margin-bottom:24px"></div>
+      <div style="font-size:30px;font-weight:700;color:#FFFFFF;margin-bottom:16px;line-height:1.3">Coordinating Successful Delivery</div>
+      <div style="font-size:22px;color:#6B7280;line-height:1.55;flex:1">Coordinating workstreams, managing dependencies and risks, engaging stakeholders, and maintaining confidence across delivery.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 5 — Product Manager ══════════════════════ -->
+<div class="slide bg-main col pad" id="s5">
+  <div class="label" style="color:#6EDBB4;margin-bottom:16px">Hat one</div>
+  <div class="t44" style="margin-bottom:44px">Product Manager — Strategic Leadership</div>
+
+  <div class="row grow gap48">
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:26px;font-weight:800;color:#6EDBB4;margin-bottom:8px">The questions I'm always asking</div>
+
+      <div style="background:#0A1A14;border:1.5px solid #6EDBB4;border-radius:12px;padding:26px 36px;display:flex;align-items:center;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#6EDBB4;min-width:52px">Q1</div>
+        <div style="font-size:28px;color:#FFFFFF;line-height:1.4">What problems are we actually trying to solve?</div>
+      </div>
+      <div style="background:#0A1A14;border:1.5px solid #6EDBB4;border-radius:12px;padding:26px 36px;display:flex;align-items:center;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#6EDBB4;min-width:52px">Q2</div>
+        <div style="font-size:28px;color:#FFFFFF;line-height:1.4">How do these initiatives align with organisational strategy?</div>
+      </div>
+      <div style="background:#0A1A14;border:1.5px solid #6EDBB4;border-radius:12px;padding:26px 36px;display:flex;align-items:center;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#6EDBB4;min-width:52px">Q3</div>
+        <div style="font-size:28px;color:#FFFFFF;line-height:1.4">Where should we focus effort to maximise value?</div>
+      </div>
+      <div style="background:#0A1A14;border:1.5px solid #6EDBB4;border-radius:12px;padding:26px 36px;display:flex;align-items:center;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#6EDBB4;min-width:52px">Q4</div>
+        <div style="font-size:28px;color:#FFFFFF;line-height:1.4">What outcomes are we actually trying to achieve?</div>
+      </div>
+    </div>
+
+    <div style="flex:1;background:#0A1A14;border:2px solid #6EDBB4;border-radius:20px;padding:52px 48px;display:flex;flex-direction:column">
+      <div style="font-size:26px;font-weight:800;color:#6EDBB4;margin-bottom:36px">What this role requires</div>
+      <div style="display:flex;flex-direction:column;gap:28px;flex:1;justify-content:center">
+        <div style="display:flex;align-items:center;gap:22px">
+          <div style="width:14px;height:14px;background:#6EDBB4;border-radius:50%;flex-shrink:0"></div>
+          <div style="font-size:26px;color:#FFFFFF">Strategic thinking across the whole portfolio</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px">
+          <div style="width:14px;height:14px;background:#6EDBB4;border-radius:50%;flex-shrink:0"></div>
+          <div style="font-size:26px;color:#FFFFFF">Stakeholder management at senior levels</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px">
+          <div style="width:14px;height:14px;background:#6EDBB4;border-radius:50%;flex-shrink:0"></div>
+          <div style="font-size:26px;color:#FFFFFF">Facilitation and workshop leadership</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px">
+          <div style="width:14px;height:14px;background:#6EDBB4;border-radius:50%;flex-shrink:0"></div>
+          <div style="font-size:26px;color:#FFFFFF">Balancing commercial, technical and user needs</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px">
+          <div style="width:14px;height:14px;background:#6EDBB4;border-radius:50%;flex-shrink:0"></div>
+          <div style="font-size:26px;color:#FFFFFF">Understanding where to invest for maximum impact</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 6 — Product Owner ══════════════════════ -->
+<div class="slide bg-main col pad" id="s6">
+  <div class="label" style="color:#3B82F6;margin-bottom:16px">Hat two</div>
+  <div class="t44" style="margin-bottom:44px">Product Owner — Turning Strategy into Delivery</div>
+
+  <div class="row grow gap40">
+
+    <div style="flex:1;background:#0D1B2E;border:2px solid #3B82F6;border-radius:20px;padding:52px 48px;display:flex;flex-direction:column">
+      <div style="font-size:26px;font-weight:800;color:#3B82F6;margin-bottom:32px">Six focus areas</div>
+      <div style="display:flex;flex-direction:column;gap:0;flex:1;justify-content:space-evenly">
+
+        <div style="display:flex;align-items:center;gap:22px;padding:16px 0;border-bottom:1px solid #1E3A5F">
+          <div style="width:36px;height:36px;background:#3B82F6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">1</div>
+          <div style="font-size:26px;color:#FFFFFF">Managing and refining the product backlog</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;padding:16px 0;border-bottom:1px solid #1E3A5F">
+          <div style="width:36px;height:36px;background:#3B82F6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">2</div>
+          <div style="font-size:26px;color:#FFFFFF">Writing and refining user stories</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;padding:16px 0;border-bottom:1px solid #1E3A5F">
+          <div style="width:36px;height:36px;background:#3B82F6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">3</div>
+          <div style="font-size:26px;color:#FFFFFF">Prioritising work based on value</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;padding:16px 0;border-bottom:1px solid #1E3A5F">
+          <div style="width:36px;height:36px;background:#3B82F6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">4</div>
+          <div style="font-size:26px;color:#FFFFFF">Working closely with delivery teams</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;padding:16px 0;border-bottom:1px solid #1E3A5F">
+          <div style="width:36px;height:36px;background:#3B82F6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">5</div>
+          <div style="font-size:26px;color:#FFFFFF">Clarifying requirements and accepting completed work</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;padding:16px 0">
+          <div style="width:36px;height:36px;background:#3B82F6;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff">6</div>
+          <div style="font-size:26px;color:#FFFFFF">Ensuring every sprint delivers meaningful value</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:32px">
+      <div style="font-size:60px;font-weight:800;color:#FFFFFF;line-height:1.1">Strategy without delivery is just intention.</div>
+      <div style="width:80px;height:5px;background:#3B82F6;border-radius:3px"></div>
+      <div style="font-size:28px;color:#6B7280;line-height:1.6">The Product Owner role is about translation — taking the big picture and turning it into work a team can execute, sprint by sprint.</div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap">
+        <div style="background:#0D1B2E;border:1.5px solid #3B82F6;border-radius:10px;padding:16px 28px;font-size:22px;color:#3B82F6">Decision making</div>
+        <div style="background:#0D1B2E;border:1.5px solid #3B82F6;border-radius:10px;padding:16px 28px;font-size:22px;color:#3B82F6">Prioritisation</div>
+        <div style="background:#0D1B2E;border:1.5px solid #3B82F6;border-radius:10px;padding:16px 28px;font-size:22px;color:#3B82F6">Product knowledge</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 7 — Scrum Master ══════════════════════ -->
+<div class="slide bg-main col pad" id="s7">
+  <div class="label" style="color:#F59E0B;margin-bottom:16px">Hat three</div>
+  <div class="t44" style="margin-bottom:40px">Scrum Master — Enabling High Performing Teams</div>
+
+  <div class="row grow gap40">
+
+    <div style="flex:1.3;display:flex;flex-direction:column;gap:28px">
+
+      <div style="font-size:22px;font-weight:700;color:#6B7280;letter-spacing:2px;margin-bottom:4px">THE FIVE CEREMONIES</div>
+      <div style="display:flex;flex-direction:column;gap:14px;flex:1">
+        <div style="background:#1A140A;border:2px solid #F59E0B;border-radius:14px;padding:26px 36px;display:flex;align-items:center;gap:24px">
+          <div style="font-size:22px;font-weight:800;color:#F59E0B;min-width:36px">01</div>
+          <div style="font-size:26px;color:#FFFFFF;font-weight:600">Sprint Planning</div>
+          <div style="font-size:20px;color:#6B7280;margin-left:auto">Align team on what to build this sprint</div>
+        </div>
+        <div style="background:#1A140A;border:1.5px solid #3A2A0A;border-radius:14px;padding:22px 36px;display:flex;align-items:center;gap:24px">
+          <div style="font-size:22px;font-weight:800;color:#F59E0B;min-width:36px">02</div>
+          <div style="font-size:26px;color:#FFFFFF;font-weight:600">Daily Scrum</div>
+          <div style="font-size:20px;color:#6B7280;margin-left:auto">15 minutes, inspect and adapt daily</div>
+        </div>
+        <div style="background:#1A140A;border:1.5px solid #3A2A0A;border-radius:14px;padding:22px 36px;display:flex;align-items:center;gap:24px">
+          <div style="font-size:22px;font-weight:800;color:#F59E0B;min-width:36px">03</div>
+          <div style="font-size:26px;color:#FFFFFF;font-weight:600">Backlog Refinement</div>
+          <div style="font-size:20px;color:#6B7280;margin-left:auto">Prepare stories for upcoming sprints</div>
+        </div>
+        <div style="background:#1A140A;border:1.5px solid #3A2A0A;border-radius:14px;padding:22px 36px;display:flex;align-items:center;gap:24px">
+          <div style="font-size:22px;font-weight:800;color:#F59E0B;min-width:36px">04</div>
+          <div style="font-size:26px;color:#FFFFFF;font-weight:600">Sprint Review</div>
+          <div style="font-size:20px;color:#6B7280;margin-left:auto">Show completed work to stakeholders</div>
+        </div>
+        <div style="background:#1A140A;border:1.5px solid #3A2A0A;border-radius:14px;padding:22px 36px;display:flex;align-items:center;gap:24px">
+          <div style="font-size:22px;font-weight:800;color:#F59E0B;min-width:36px">05</div>
+          <div style="font-size:26px;color:#FFFFFF;font-weight:600">Sprint Retrospective</div>
+          <div style="font-size:20px;color:#6B7280;margin-left:auto">Reflect, learn and improve continuously</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="flex:1;background:#1A140A;border:2px solid #F59E0B;border-radius:20px;padding:52px 48px;display:flex;flex-direction:column">
+      <div style="font-size:26px;font-weight:800;color:#F59E0B;margin-bottom:36px">Coaching approach</div>
+      <div style="display:flex;flex-direction:column;gap:28px;flex:1;justify-content:center">
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Facilitating</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Creating structure that lets the team find its own answers</div>
+        </div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Mentoring</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Sharing experience where the team would benefit from guidance</div>
+        </div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Challenging assumptions</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Questioning the status quo to unlock better thinking</div>
+        </div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Creating the right environment</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Psychological safety comes before high performance</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 8 — Delivery Lead ══════════════════════ -->
+<div class="slide bg-main col pad" id="s8">
+  <div class="label" style="color:#8B5CF6;margin-bottom:16px">Hat four</div>
+  <div class="t44" style="margin-bottom:44px">Delivery Lead — Coordinating Successful Delivery</div>
+
+  <div class="row grow gap40">
+
+    <div style="flex:1.3;display:flex;flex-direction:column;gap:14px;justify-content:center">
+
+      <div style="background:#130D1A;border:2px solid #8B5CF6;border-top:10px solid #8B5CF6;border-radius:14px;padding:28px 36px;display:flex;align-items:flex-start;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#8B5CF6;min-width:48px">01</div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Cross-team coordination</div>
+          <div style="font-size:20px;color:#6B7280">Bringing workstreams together so nothing falls between the gaps</div>
+        </div>
+      </div>
+      <div style="background:#130D1A;border:1.5px solid #2A1F35;border-radius:14px;padding:24px 36px;display:flex;align-items:flex-start;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#8B5CF6;min-width:48px">02</div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Dependency management</div>
+          <div style="font-size:20px;color:#6B7280">Identifying and resolving blockers before they become delays</div>
+        </div>
+      </div>
+      <div style="background:#130D1A;border:1.5px solid #2A1F35;border-radius:14px;padding:24px 36px;display:flex;align-items:flex-start;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#8B5CF6;min-width:48px">03</div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Risk identification</div>
+          <div style="font-size:20px;color:#6B7280">Proactively surfacing risks so the team can act early</div>
+        </div>
+      </div>
+      <div style="background:#130D1A;border:1.5px solid #2A1F35;border-radius:14px;padding:24px 36px;display:flex;align-items:flex-start;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#8B5CF6;min-width:48px">04</div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Stakeholder engagement</div>
+          <div style="font-size:20px;color:#6B7280">Right people, right information, right time</div>
+        </div>
+      </div>
+      <div style="background:#130D1A;border:1.5px solid #2A1F35;border-radius:14px;padding:24px 36px;display:flex;align-items:flex-start;gap:28px">
+        <div style="font-size:28px;font-weight:800;color:#8B5CF6;min-width:48px">05</div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Progress visibility</div>
+          <div style="font-size:20px;color:#6B7280">Transparent tracking that builds confidence across the programme</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:36px">
+      <div style="font-size:60px;font-weight:800;color:#FFFFFF;line-height:1.1">Delivery leadership is about creating confidence.</div>
+      <div style="width:80px;height:5px;background:#8B5CF6;border-radius:3px"></div>
+      <div style="font-size:28px;color:#6B7280;line-height:1.6">Ensuring the right people have the right information at the right time — while enabling teams to focus on what matters.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 9 — Supporting Multiple Clients ══════════════════════ -->
+<div class="slide bg-main col pad" id="s9">
+  <div class="label" style="margin-bottom:16px">Client delivery</div>
+  <div class="t44" style="margin-bottom:16px">Supporting Multiple Clients</div>
+  <div style="font-size:28px;color:#6B7280;margin-bottom:40px">Context switching is a normal part of every day</div>
+
+  <div class="row grow" style="gap:0">
+
+    <div style="flex:1;background:#161616;border-radius:20px 0 0 20px;padding:48px 64px;display:flex;flex-direction:column;align-items:center">
+      <div style="font-size:22px;font-weight:700;color:#6B7280;letter-spacing:3px;margin-bottom:40px">ONE MEETING</div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:100%">
+        <div style="background:#0A1A14;border:2px solid #6EDBB4;border-radius:12px;padding:24px 0;width:100%;text-align:center;font-size:28px;font-weight:700;color:#6EDBB4">Strategic roadmap workshop</div>
+        <div style="font-size:30px;color:#2A2A2A;padding:12px 0;text-align:center;width:100%">↓</div>
+        <div style="background:#0D1B2E;border:2px solid #3B82F6;border-radius:12px;padding:24px 0;width:100%;text-align:center;font-size:28px;font-weight:700;color:#3B82F6">Backlog refinement session</div>
+        <div style="font-size:30px;color:#2A2A2A;padding:12px 0;text-align:center;width:100%">↓</div>
+        <div style="background:#1A140A;border:2px solid #F59E0B;border-radius:12px;padding:24px 0;width:100%;text-align:center;font-size:28px;font-weight:700;color:#F59E0B">Scrum Master coaching call</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:center;padding:0 52px;font-size:72px;font-weight:800;color:#6EDBB4">→</div>
+
+    <div style="flex:1;background:#0A1A14;border:2px solid #6EDBB4;border-radius:0 20px 20px 0;padding:48px 64px;display:flex;flex-direction:column">
+      <div style="font-size:22px;font-weight:700;color:#6EDBB4;letter-spacing:3px;margin-bottom:40px">WHAT THIS DEMANDS</div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px">
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Different cultures</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Each organisation has its own ways of working, politics and communication norms</div>
+        </div>
+        <div style="height:1px;background:#0D2218"></div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Different agile maturity</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Some teams are Scrum veterans. Others are starting from scratch.</div>
+        </div>
+        <div style="height:1px;background:#0D2218"></div>
+        <div>
+          <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:8px">Different challenges</div>
+          <div style="font-size:20px;color:#6B7280;line-height:1.5">Adapting communication style and leadership approach across every engagement</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 10 — Business Development ══════════════════════ -->
+<div class="slide bg-main col pad" id="s10">
+  <div class="label" style="margin-bottom:16px">Beyond delivery</div>
+  <div class="t44" style="margin-bottom:40px">Driving Business Development</div>
+
+  <div class="row grow gap32">
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:28px;justify-content:center">
+      <div style="font-size:52px;font-weight:800;color:#FFFFFF;line-height:1.15">Shaping what comes next for ntegra.</div>
+      <div style="width:80px;height:5px;background:#6EDBB4;border-radius:3px"></div>
+      <div style="font-size:26px;color:#6B7280;line-height:1.6">Running workshops, building propositions, creating proof of concepts — showing clients how agile and modern delivery can solve their problems.</div>
+    </div>
+
+    <div style="flex:1.2;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+      <div style="background:#0A1A14;border:1.5px solid #6EDBB4;border-radius:16px;padding:32px 28px">
+        <div style="font-size:20px;font-weight:800;color:#6EDBB4;margin-bottom:10px">Innovation Festival</div>
+        <div style="font-size:18px;color:#6B7280;line-height:1.5">Leading sessions that showcase agile and product thinking to new audiences</div>
+      </div>
+      <div style="background:#0A1A14;border:1.5px solid #6EDBB4;border-radius:16px;padding:32px 28px">
+        <div style="font-size:20px;font-weight:800;color:#6EDBB4;margin-bottom:10px">NWG Opportunities</div>
+        <div style="font-size:18px;color:#6B7280;line-height:1.5">Shaping follow-on opportunities that build on initial engagement success</div>
+      </div>
+      <div style="background:#161616;border:1.5px solid #2A2A2A;border-radius:16px;padding:32px 28px">
+        <div style="font-size:20px;font-weight:800;color:#FFFFFF;margin-bottom:10px">Workshops</div>
+        <div style="font-size:18px;color:#6B7280;line-height:1.5">Discovery and proposition-development sessions with client stakeholders</div>
+      </div>
+      <div style="background:#161616;border:1.5px solid #2A2A2A;border-radius:16px;padding:32px 28px">
+        <div style="font-size:20px;font-weight:800;color:#FFFFFF;margin-bottom:10px">Propositions</div>
+        <div style="font-size:18px;color:#6B7280;line-height:1.5">Packaging ideas into compelling, value-led solutions for clients</div>
+      </div>
+      <div style="background:#161616;border:1.5px solid #2A2A2A;border-radius:16px;padding:32px 28px">
+        <div style="font-size:20px;font-weight:800;color:#FFFFFF;margin-bottom:10px">Proof of Concepts</div>
+        <div style="font-size:18px;color:#6B7280;line-height:1.5">Rapid prototyping to demonstrate feasibility quickly and credibly</div>
+      </div>
+      <div style="background:#161616;border:1.5px solid #2A2A2A;border-radius:16px;padding:32px 28px">
+        <div style="font-size:20px;font-weight:800;color:#FFFFFF;margin-bottom:10px">Idea → Product</div>
+        <div style="font-size:18px;color:#6B7280;line-height:1.5">Showing how early concepts evolve into valuable products and services</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 11 — Internal Initiatives ══════════════════════ -->
+<div class="slide bg-main col pad" id="s11">
+  <div class="label" style="margin-bottom:16px">Inside ntegra</div>
+  <div class="t44" style="margin-bottom:40px">Contributing to Internal Strategic Initiatives</div>
+
+  <div class="row grow gap32">
+
+    <div class="card card-mint card-top-mint" style="display:flex;flex-direction:column">
+      <div style="font-size:96px;font-weight:800;color:#6EDBB4;line-height:1;margin-bottom:20px">30</div>
+      <div style="font-size:36px;font-weight:700;color:#FFFFFF;margin-bottom:24px;line-height:1.25">Team 30</div>
+      <div style="font-size:22px;color:#6B7280;line-height:1.55;flex:1;margin-bottom:32px">Larger strategic initiatives that shape the future direction of our organisation. Longer-term programmes focused on capability, innovation and continuous improvement — requiring collaboration across multiple disciplines and business areas.</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:10px;height:10px;background:#6EDBB4;border-radius:50%"></div>
+          <div style="font-size:20px;color:#FFFFFF">Organisational capability development</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:10px;height:10px;background:#6EDBB4;border-radius:50%"></div>
+          <div style="font-size:20px;color:#FFFFFF">Innovation culture and practice</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:10px;height:10px;background:#6EDBB4;border-radius:50%"></div>
+          <div style="font-size:20px;color:#FFFFFF">Cross-discipline collaboration</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-violet card-top-violet" style="display:flex;flex-direction:column">
+      <div style="font-size:48px;font-weight:800;color:#8B5CF6;line-height:1;margin-bottom:20px">PE·WG</div>
+      <div style="font-size:36px;font-weight:700;color:#FFFFFF;margin-bottom:24px;line-height:1.25">Product Engineering Working Group</div>
+      <div style="font-size:22px;color:#6B7280;line-height:1.55;flex:1;margin-bottom:32px">Bringing together product thinking, engineering practices and agile delivery to improve how we build and deliver products across the whole business. Influencing not just individual teams — but broader organisational ways of working.</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:10px;height:10px;background:#8B5CF6;border-radius:50%"></div>
+          <div style="font-size:20px;color:#FFFFFF">Bridging product and engineering practice</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:10px;height:10px;background:#8B5CF6;border-radius:50%"></div>
+          <div style="font-size:20px;color:#FFFFFF">Shared delivery standards across ntegra</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:10px;height:10px;background:#8B5CF6;border-radius:50%"></div>
+          <div style="font-size:20px;color:#FFFFFF">Influencing organisational ways of working</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 12 — Leveraging AI ══════════════════════ -->
+<div class="slide bg-main col pad" id="s12">
+  <div class="label" style="margin-bottom:16px">Working smarter</div>
+  <div class="t44" style="margin-bottom:16px">Leveraging AI to Accelerate Everything</div>
+  <div style="font-size:26px;color:#6B7280;margin-bottom:40px">Remove repetitive tasks · Accelerate delivery · Increase output quality</div>
+
+  <div class="row grow gap40">
+
+    <div style="flex:1.3;background:#161616;border-radius:20px;padding:52px 48px;display:flex;flex-direction:column">
+      <div style="font-size:24px;font-weight:700;color:#6B7280;letter-spacing:2px;margin-bottom:32px">WHAT AI HANDLES</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;align-content:start">
+
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">User stories</div>
+          <div style="font-size:16px;color:#6B7280">Drafting stories and acceptance criteria</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Workshop materials</div>
+          <div style="font-size:16px;color:#6B7280">Agendas, canvases and facilitation guides</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Meeting summaries</div>
+          <div style="font-size:16px;color:#6B7280">Notes, actions and decision logs</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Stakeholder comms</div>
+          <div style="font-size:16px;color:#6B7280">Updates, reports and presentations</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Documentation</div>
+          <div style="font-size:16px;color:#6B7280">Process docs, playbooks and guides</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Delivery plans</div>
+          <div style="font-size:16px;color:#6B7280">Roadmaps, timelines and sprint plans</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Research</div>
+          <div style="font-size:16px;color:#6B7280">Analysis, synthesis and insight</div>
+        </div>
+        <div style="background:#0B0B0B;border:1px solid #1F1F1F;border-radius:10px;padding:20px 22px">
+          <div style="font-size:20px;color:#6EDBB4;font-weight:700;margin-bottom:6px">Admin automation</div>
+          <div style="font-size:16px;color:#6B7280">Routine tasks freed up for real work</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:28px;justify-content:center">
+      <div style="font-size:52px;font-weight:800;color:#FFFFFF;line-height:1.15">AI doesn't replace expertise. It amplifies it.</div>
+      <div style="width:80px;height:5px;background:#6EDBB4;border-radius:3px"></div>
+      <div style="background:#0A1A14;border:2px solid #6EDBB4;border-radius:16px;padding:36px 40px">
+        <div style="font-size:22px;font-weight:800;color:#6EDBB4;margin-bottom:20px">Tools I use daily</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:22px;color:#FFFFFF">Claude Code — rapid prototyping &amp; PoCs</div>
+          <div style="font-size:22px;color:#FFFFFF">AI coding assistants — proof of concept builds</div>
+          <div style="font-size:22px;color:#FFFFFF">AI-assisted development for early demos</div>
+          <div style="font-size:22px;color:#FFFFFF">Automated drafting for all written outputs</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 13 — Skills ══════════════════════ -->
+<div class="slide bg-main col pad" id="s13">
+  <div class="glow" style="width:600px;height:600px;top:100px;right:-100px;background:rgba(110,219,180,0.07)"></div>
+  <div class="label" style="margin-bottom:16px">The toolkit</div>
+  <div class="t44" style="margin-bottom:16px">Skills That Make the Difference</div>
+  <div style="font-size:24px;color:#6B7280;margin-bottom:40px">A broad and continually evolving set of capabilities</div>
+
+  <div class="row grow gap32">
+
+    <div style="flex:1;background:#161616;border-radius:20px;padding:52px 48px;border-top:10px solid #6EDBB4;display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#6EDBB4;letter-spacing:2px;margin-bottom:28px">DELIVERY &amp; AGILE</div>
+      <div style="display:flex;flex-direction:column;gap:16px;flex:1">
+        <div style="font-size:24px;color:#FFFFFF">Agile coaching &amp; mentoring</div>
+        <div style="font-size:24px;color:#FFFFFF">Scrum facilitation</div>
+        <div style="font-size:24px;color:#FFFFFF">Product management &amp; ownership</div>
+        <div style="font-size:24px;color:#FFFFFF">Roadmapping &amp; prioritisation</div>
+        <div style="font-size:24px;color:#FFFFFF">Risk &amp; dependency management</div>
+        <div style="font-size:24px;color:#FFFFFF">Delivery leadership</div>
+      </div>
+    </div>
+
+    <div style="flex:1;background:#161616;border-radius:20px;padding:52px 48px;border-top:10px solid #3B82F6;display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#3B82F6;letter-spacing:2px;margin-bottom:28px">STRATEGY &amp; PEOPLE</div>
+      <div style="display:flex;flex-direction:column;gap:16px;flex:1">
+        <div style="font-size:24px;color:#FFFFFF">Strategic thinking</div>
+        <div style="font-size:24px;color:#FFFFFF">Stakeholder engagement</div>
+        <div style="font-size:24px;color:#FFFFFF">Workshop facilitation</div>
+        <div style="font-size:24px;color:#FFFFFF">Change management</div>
+        <div style="font-size:24px;color:#FFFFFF">Systems thinking</div>
+        <div style="font-size:24px;color:#FFFFFF">Communication at all organisational levels</div>
+      </div>
+    </div>
+
+    <div style="flex:1;background:#161616;border-radius:20px;padding:52px 48px;border-top:10px solid #8B5CF6;display:flex;flex-direction:column">
+      <div style="font-size:20px;font-weight:800;color:#8B5CF6;letter-spacing:2px;margin-bottom:28px">TECHNOLOGY &amp; AI</div>
+      <div style="display:flex;flex-direction:column;gap:16px;flex:1">
+        <div style="font-size:24px;color:#FFFFFF">Data-driven decision making</div>
+        <div style="font-size:24px;color:#FFFFFF">AI-enabled productivity</div>
+        <div style="font-size:24px;color:#FFFFFF">Technical awareness</div>
+        <div style="font-size:24px;color:#FFFFFF">Rapid prototyping</div>
+        <div style="font-size:24px;color:#FFFFFF">Proof of concept development</div>
+        <div style="font-size:24px;color:#FFFFFF">AI-assisted development tooling</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 14 — Delivering Value Every Day ══════════════════════ -->
+<div class="slide bg-main col pad" id="s14">
+  <div class="label" style="margin-bottom:16px">Every day</div>
+  <div class="t44" style="margin-bottom:40px">Delivering Value Every Day</div>
+
+  <div class="row grow gap32" style="margin-bottom:32px">
+
+    <div class="card card-mint card-top-mint" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 32px">
+      <div style="font-size:20px;font-weight:800;color:#6EDBB4;letter-spacing:1px;margin-bottom:16px">PRODUCT MANAGER</div>
+      <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:12px;line-height:1.3">Strategic</div>
+      <div style="font-size:18px;color:#6B7280;line-height:1.5;flex:1">Vision · Alignment · Investment decisions</div>
+    </div>
+
+    <div class="card card-blue card-top-blue" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 32px">
+      <div style="font-size:20px;font-weight:800;color:#3B82F6;letter-spacing:1px;margin-bottom:16px">PRODUCT OWNER</div>
+      <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:12px;line-height:1.3">Value-focused</div>
+      <div style="font-size:18px;color:#6B7280;line-height:1.5;flex:1">Backlog · Stories · Sprint value</div>
+    </div>
+
+    <div class="card card-amber card-top-amber" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 32px">
+      <div style="font-size:20px;font-weight:800;color:#F59E0B;letter-spacing:1px;margin-bottom:16px">SCRUM MASTER</div>
+      <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:12px;line-height:1.3">Servant-leader</div>
+      <div style="font-size:18px;color:#6B7280;line-height:1.5;flex:1">Ceremonies · Coaching · Improvement</div>
+    </div>
+
+    <div class="card card-violet card-top-violet" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 32px">
+      <div style="font-size:20px;font-weight:800;color:#8B5CF6;letter-spacing:1px;margin-bottom:16px">DELIVERY LEAD</div>
+      <div style="font-size:26px;font-weight:700;color:#FFFFFF;margin-bottom:12px;line-height:1.3">Pragmatic</div>
+      <div style="font-size:18px;color:#6B7280;line-height:1.5;flex:1">Dependencies · Risks · Confidence</div>
+    </div>
+
+  </div>
+
+  <div style="background:#0A1A14;border:2px solid #6EDBB4;border-radius:16px;padding:44px 64px">
+    <div style="font-size:32px;color:#6B7280;font-style:italic;margin-bottom:14px">"No two days are ever the same, but the objective remains constant:</div>
+    <div style="font-size:36px;font-weight:700;color:#FFFFFF;font-style:italic">enabling people, delivering value and helping organisations become more agile."</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SLIDE 15 — Closing ══════════════════════ -->
+<div class="slide bg-main grid-bg col" style="padding:140px 140px 60px" id="s15">
+  <div class="glow" style="width:1000px;height:1000px;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(110,219,180,0.1)"></div>
+  <div style="font-size:100px;font-weight:800;color:#FFFFFF;margin-bottom:12px">Enable.</div>
+  <div style="font-size:100px;font-weight:800;color:#6EDBB4;margin-bottom:12px">Deliver.</div>
+  <div style="font-size:100px;font-weight:800;color:#2A2A2A;margin-bottom:64px">Improve.</div>
+  <div style="width:130px;height:5px;background:#6EDBB4;border-radius:3px;margin-bottom:48px"></div>
+  <div style="font-size:36px;color:#6B7280;font-style:italic;line-height:1.5">"Wearing many hats. Delivering real value. Every single day."</div>
+  <div style="flex:1"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <svg width="200" height="52" viewBox="0 0 200 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="4" width="8" height="40" rx="3" fill="#6EDBB4"/>
+      <polygon points="0,4 8,4 22,44 14,44" fill="#6EDBB4"/>
+      <rect x="14" y="4" width="8" height="40" rx="3" fill="#6EDBB4"/>
+      <text x="34" y="38" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="300" fill="#FFFFFF" letter-spacing="-0.5">ntegra</text>
+    </svg>
+    <div style="font-size:22px;color:#2A2A2A">david.williams@ntegra.co.uk</div>
+  </div>
+</div>
+
+<script>
+function scaleSlides() {
+  const scale = window.innerWidth / 1920;
+  document.querySelectorAll('.slide').forEach(slide => {
+    slide.style.transform = `scale(${scale})`;
+    const wrapper = slide.parentElement;
+    if (wrapper && wrapper.classList.contains('slide-wrapper')) {
+      wrapper.style.height = (1080 * scale) + 'px';
+    }
+  });
+}
+
+document.querySelectorAll('.slide').forEach(slide => {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'slide-wrapper';
+  slide.parentNode.insertBefore(wrapper, slide);
+  wrapper.appendChild(slide);
+});
+
+scaleSlides();
+window.addEventListener('resize', scaleSlides);
+</script>
+</body>
+</html>
